@@ -9,6 +9,7 @@ import com.simple.foreignexchange.exception.ThirdPartyServiceException;
 import com.simple.foreignexchange.service.ExchangeRateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,6 +19,9 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class ExchangeRateServiceImpl implements ExchangeRateService {
+
+    @Value("${apiKey}")
+    private String apiKey;
 
     private final RestTemplate restTemplate;
 
@@ -30,7 +34,7 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
         ExchangeRateClientResponseDto clientResponseDto;
         try {
             clientResponseDto = restTemplate.getForObject(Constants.BASE_RATES_URL,
-                    ExchangeRateClientResponseDto.class, exchangeRateRequestDto.getSourceCurrency(), Constants.API_KEY);
+                    ExchangeRateClientResponseDto.class, exchangeRateRequestDto.getSourceCurrency(), apiKey);
         } catch (Exception e) {
             throw new ThirdPartyServiceException(Constants.DEFAULT_THIRD_PARTY_SERVICE_ERROR_MESSAGE + e.getMessage());
         }

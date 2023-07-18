@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +38,9 @@ import static org.mockito.Mockito.doThrow;
 
 @SpringBootTest
 class ConversionServiceTest {
+
+    @Value("${apiKey}")
+    private String apiKey;
 
     @Autowired
     private ConversionService conversionService;
@@ -79,7 +83,7 @@ class ConversionServiceTest {
         // when
         doReturn(clientResponseDto).when(restTemplate).getForObject(Constants.BASE_CONVERT_URL,
                 ClientConvertResponseDto.class, convertRequestDto.getSourceCurrency(),
-                convertRequestDto.getTargetCurrency(), convertRequestDto.getAmount(), Constants.API_KEY);
+                convertRequestDto.getTargetCurrency(), convertRequestDto.getAmount(), apiKey);
         doReturn(exchangeConversion).when(exchangeConversionRepository).save(Mockito.any());
 
         ConvertResponseDto convertResponseDto = conversionService.convertExchange(convertRequestDto);
@@ -104,7 +108,7 @@ class ConversionServiceTest {
         // when
         doReturn(null).when(restTemplate).getForObject(Constants.BASE_CONVERT_URL,
                 ClientConvertResponseDto.class, convertRequestDto.getSourceCurrency(),
-                convertRequestDto.getTargetCurrency(), convertRequestDto.getAmount(), Constants.API_KEY);
+                convertRequestDto.getTargetCurrency(), convertRequestDto.getAmount(), apiKey);
 
         // then
         ThirdPartyServiceException thrown = Assertions.assertThrows(ThirdPartyServiceException.class, () -> {
@@ -125,7 +129,7 @@ class ConversionServiceTest {
         // when
         doThrow(RuntimeException.class).when(restTemplate).getForObject(Constants.BASE_CONVERT_URL,
                 ClientConvertResponseDto.class, convertRequestDto.getSourceCurrency(),
-                convertRequestDto.getTargetCurrency(), convertRequestDto.getAmount(), Constants.API_KEY);
+                convertRequestDto.getTargetCurrency(), convertRequestDto.getAmount(), apiKey);
 
         // then
         ThirdPartyServiceException thrown = Assertions.assertThrows(ThirdPartyServiceException.class, () -> {

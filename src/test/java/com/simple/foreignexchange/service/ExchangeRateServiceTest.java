@@ -10,6 +10,7 @@ import com.simple.foreignexchange.exception.ThirdPartyServiceException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.web.client.RestTemplate;
@@ -27,6 +28,9 @@ import static org.mockito.Mockito.doThrow;
 
 @SpringBootTest
 class ExchangeRateServiceTest {
+
+    @Value("${apiKey}")
+    private String apiKey;
 
     @Autowired
     private ExchangeRateService exchangeRateService;
@@ -50,7 +54,7 @@ class ExchangeRateServiceTest {
         // when
         doReturn(clientResponseDto).when(restTemplate).getForObject(Constants.BASE_RATES_URL,
                 ExchangeRateClientResponseDto.class,
-                TestConstants.EXAMPLE_SOURCE_CURRENCY, Constants.API_KEY);
+                TestConstants.EXAMPLE_SOURCE_CURRENCY, apiKey);
 
         ExchangeRateResponseDto exchangeRate = exchangeRateService.getExchangeRate(exchangeRateRequestDto);
 
@@ -78,7 +82,7 @@ class ExchangeRateServiceTest {
         // when
         doReturn(clientResponseDto).when(restTemplate).getForObject(Constants.BASE_RATES_URL,
                 ExchangeRateClientResponseDto.class,
-                TestConstants.EXAMPLE_SOURCE_CURRENCY, Constants.API_KEY);
+                TestConstants.EXAMPLE_SOURCE_CURRENCY, apiKey);
 
         // then
         RatesNotFoundException thrown = Assertions.assertThrows(RatesNotFoundException.class, () -> {
@@ -97,7 +101,7 @@ class ExchangeRateServiceTest {
         // when
         doReturn(null).when(restTemplate).getForObject(Constants.BASE_RATES_URL,
                 ExchangeRateClientResponseDto.class,
-                TestConstants.EXAMPLE_SOURCE_CURRENCY, Constants.API_KEY);
+                TestConstants.EXAMPLE_SOURCE_CURRENCY, apiKey);
 
         // then
         ThirdPartyServiceException thrown = Assertions.assertThrows(ThirdPartyServiceException.class, () -> {
@@ -116,7 +120,7 @@ class ExchangeRateServiceTest {
         // when
         doThrow(IllegalArgumentException.class).when(restTemplate).getForObject(Constants.BASE_RATES_URL,
                 ExchangeRateClientResponseDto.class,
-                TestConstants.EXAMPLE_SOURCE_CURRENCY, Constants.API_KEY);
+                TestConstants.EXAMPLE_SOURCE_CURRENCY, apiKey);
 
         // then
         ThirdPartyServiceException thrown = Assertions.assertThrows(ThirdPartyServiceException.class, () -> {

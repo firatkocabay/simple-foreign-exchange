@@ -14,6 +14,7 @@ import com.simple.foreignexchange.service.ConversionService;
 import com.simple.foreignexchange.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ConversionServiceImpl implements ConversionService {
 
+    @Value("${apiKey}")
+    private String apiKey;
     private final RestTemplate restTemplate;
     private final ExchangeConversionRepository exchangeConversionRepository;
 
@@ -41,7 +44,7 @@ public class ConversionServiceImpl implements ConversionService {
 
         try {
             clientConvertResponseDto = restTemplate.getForObject(Constants.BASE_CONVERT_URL, ClientConvertResponseDto.class,
-                    convertRequestDto.getSourceCurrency(), convertRequestDto.getTargetCurrency(), convertRequestDto.getAmount(), Constants.API_KEY);
+                    convertRequestDto.getSourceCurrency(), convertRequestDto.getTargetCurrency(), convertRequestDto.getAmount(), apiKey);
         } catch (Exception e) {
             throw new ThirdPartyServiceException(Constants.DEFAULT_THIRD_PARTY_SERVICE_ERROR_MESSAGE + e.getMessage());
         }
